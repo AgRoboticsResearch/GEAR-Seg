@@ -45,8 +45,7 @@ pip install -e .
 ### 5. Install Ollama
 GEAR-Seg utilizes a vision-language model to generate whole-image descriptions for reasoning segmentation. Deploy **Llama 3.2 Vision** locally using **Ollama**:
 
-Follow the official instructions from the Ollama website:  
-https://ollama.com
+Follow the official instructions from the [Ollama website](https://ollama.com)
 
 For most Linux and macOS systems, Ollama can be installed with:
 ```bash
