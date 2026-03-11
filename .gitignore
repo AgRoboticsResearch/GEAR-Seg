@@ -11,3 +11,6 @@ __pycache__/
 
 *.pth
 *.pt
+
+# sam masks
+*/masks/
