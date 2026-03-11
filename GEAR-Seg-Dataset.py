@@ -27,7 +27,7 @@ def parse_args():
                        default='./checkpoints/DAM-3B',
                        help='Path to DAM model')
     #ollama path 
-    parser.add_argument("--ollama_path", default="/mnt/nas/fruit_dataset/wyn/ollama/bin/ollama", help="Path to ollama")
+    parser.add_argument("--ollama_path", default="your path to ollama", help="Path to ollama")
 
     # SAM parameters
     parser.add_argument('--max_image_size', type=int, default=3000, help='Max image size for SAM')
@@ -78,23 +78,23 @@ def main():
     args.des_dir = out["des"]
     print("Output root:", os.path.join(args.output_dir, split))
 
-    # dam_model = init_dam_model(args)
-    # sam_predictor = init_sam_model(args)
+    dam_model = init_dam_model(args)
+    sam_predictor = init_sam_model(args)
 
-    # print("\n===== SAM segmentation =====")
-    # generate_all_sam_mask(args, sam_predictor, out["sam_mask"], out["sam_vis"])
+    print("\n===== SAM segmentation =====")
+    generate_all_sam_mask(args, sam_predictor, out["sam_mask"], out["sam_vis"])
 
-    # print("\n===== DAM descriptions =====")
-    # save_description(dam_model, out["sam_mask"], out["des"], args)
+    print("\n===== DAM descriptions =====")
+    save_description(dam_model, out["sam_mask"], out["des"], args)
 
-    # print("\n===== Whole image description (Ollama) =====")
-    # ollama_process = ensure_ollama_running(args.ollama_path)
-    # generate_whole_descriptions(args, out["des"], model_name="llama3.2-vision:latest")
+    print("\n===== Whole image description (Ollama) =====")
+    ollama_process = ensure_ollama_running(args.ollama_path)
+    generate_whole_descriptions(args, out["des"], model_name="llama3.2-vision:latest")
 
     print("\n===== Reasoning segmentation dataset generation =====")
     generate_reasonseg_dataset(args)
 
-    # close_ollama(ollama_process)
+    close_ollama(ollama_process)
 
 
 if __name__ == "__main__":

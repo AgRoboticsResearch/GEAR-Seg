@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument("--question_dir", required=True)
     parser.add_argument("--api_key", required=True)
 
-    parser.add_argument("--output_dir", default="/home/nya/code/code/2-Reasoning-Seg/GEAR-Seg/GEAR-Seg/outputs/reasonseg_task")
+    parser.add_argument("--output_dir", default="./outputs/reasonseg_task")
     
     parser.add_argument('--sam_model_path', type=str, default='/mnt/nas/fruit_dataset/wyn/202507/describe_anything_checkpoint/SDM-D_checkpoint/checkpoints/sam2_hiera_large.pt', help='Path to SAM model')
     parser.add_argument('--model_cfg', type=str, default="sam2_hiera_l.yaml", required = False, help='SAM2 model config file')
@@ -28,7 +28,7 @@ def parse_args():
                        default='/mnt/nas/fruit_dataset/wyn/202507/describe_anything_checkpoint/checkpoints/DAM-3B',
                        help='Path to DAM model')
     #ollama path 
-    parser.add_argument("--ollama_path", default="/mnt/nas/fruit_dataset/wyn/ollama/bin/ollama", help="Path to ollama")
+    parser.add_argument("--ollama_path", default="your path to ollama", help="Path to ollama")
 
     # SAM parameters
     parser.add_argument('--max_image_size', type=int, default=3000, help='Max image size for SAM')
