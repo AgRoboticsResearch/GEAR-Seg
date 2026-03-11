@@ -21,11 +21,11 @@ def parse_args():
 
     parser.add_argument("--output_dir", default="./outputs/reasonseg_task")
     
-    parser.add_argument('--sam_model_path', type=str, default='/mnt/nas/fruit_dataset/wyn/202507/describe_anything_checkpoint/SDM-D_checkpoint/checkpoints/sam2_hiera_large.pt', help='Path to SAM model')
+    parser.add_argument('--sam_model_path', type=str, default='./checkpoints/sam2_hiera_large.pt', help='Path to SAM model')
     parser.add_argument('--model_cfg', type=str, default="sam2_hiera_l.yaml", required = False, help='SAM2 model config file')
     
     parser.add_argument('--dam_model_path', type=str, 
-                       default='/mnt/nas/fruit_dataset/wyn/202507/describe_anything_checkpoint/checkpoints/DAM-3B',
+                       default='./checkpoints/DAM-3B',
                        help='Path to DAM model')
     #ollama path 
     parser.add_argument("--ollama_path", default="your path to ollama", help="Path to ollama")
