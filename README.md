@@ -2,7 +2,7 @@
 
 <font size=4><div align='center'><b>GEAR-Seg</b>: <b>G</b>rounded <b>E</b>xplainable <b>A</b>gent for <b>R</b>easoning <b>S</b>egmentation</div></font>
 
-[[`Paper`]( )] [[`Project`](https://github.com/AgRoboticsResearch/SDM-D.gi)]  [[`Dataset`]( )]
+[[`Paper`]( )] [[`Project`](https://github.com/AgRoboticsResearch/SDM-D.gi)]  [[`Dataset`](https://huggingface.co/datasets/00mmw/GEAR-Seg-131k)]
 
 ![GEAR-Seg architecture](./asset/1-GEAR-Seg-all.png)
 
@@ -136,7 +136,7 @@ Additionally, GEAR-Seg supports referring segmentation tasks and long-tail tasks
 
 ## 📂 Dataset
 
-We also introduce **GEAR-131K**, a comprehensive benchmark comprising over 38k images and 656k diverse QA-mask pairs. Five distinct reasoning categories are defined within GEAR-131K. Details are as follows. You can download the dataset here:
+We also introduce [**GEAR-131K**](https://huggingface.co/datasets/00mmw/GEAR-Seg-131k), a comprehensive benchmark comprising over 38k images and 656k diverse QA-mask pairs. Five distinct reasoning categories are defined within GEAR-131K. Details are as follows. You can download the dataset here:
 ![GEAR-Seg architecture](./asset/4-count1.png)
 
 ## 💘 Acknowledgements
