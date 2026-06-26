@@ -63,7 +63,7 @@ Download the model weight files to the `./checkpoint` folder. The required check
 We recommend using **DeepSeek-R1-0528** for reasoning. Apply for an API key from [DeepSeek](https://platform.deepseek.com/api_keys).
 
 ### 8. Organize Dataset
-Place your dataset into the `./Images` folder. Below is an example structure:
+Place your dataset into the `./dataset` folder. Below is an example structure:
 ```bash
 dataset/
 ├── your_dataset_name/
