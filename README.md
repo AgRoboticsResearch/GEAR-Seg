@@ -2,7 +2,7 @@
 
 <font size=4><div align='center'><b>GEAR-Seg</b>: <b>G</b>rounded <b>E</b>xplainable <b>A</b>gent for <b>R</b>easoning <b>S</b>egmentation</div></font>
 
-[[`Paper`]( )] [[`Project`](https://github.com/AgRoboticsResearch/SDM-D.gi)]  [[`Dataset`](https://huggingface.co/datasets/00mmw/GEAR-Seg-131k)]
+[[`Paper`](./asset/ECCV_2026_Paper_Template_GEAR_Seg_ArXiv.pdf)] [[`Project`](https://agroboticsresearch.github.io/GEAR-Seg/)]  [[`Dataset`](https://huggingface.co/datasets/00mmw/GEAR-Seg-131k)]
 
 ![GEAR-Seg architecture](./asset/1-GEAR-Seg-all.png)
 
