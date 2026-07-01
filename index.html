@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEAR-Seg: A Grounded Explainable Agent for Reasoning Segmentation and Data Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 深色模式配色方案 */
+            --primary-color: #3b82f6;
+            --primary-dark: #60a5fa;
+            --text-color: #f8fafc;
+            --text-light: #94a3b8;
+            --bg-color: #0f172a;
+            --bg-light: #1e293b;
+            --bg-dark: #020617;
+            --border-color: #334155;
+            --accent-color: #38bdf8;
+            --gradient-start: #3b82f6;
+            --gradient-end: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-dark) 100%);
+            padding: 80px 0 60px;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top center, rgba(59, 130, 246, 0.1) 0%, rgba(15, 23, 42, 0) 70%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-color);
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .gear-highlight {
+            background: linear-gradient(to right, var(--gradient-start), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .authors {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .authors a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .authors a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .affiliations {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            margin-bottom: 32px;
+        }
+
+        .affiliations .institution {
+            margin-bottom: 4px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #2d3748;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Figure Container - 改为100%占比，整体放大 */
+        .figure-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .figure-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .figure-caption {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            max-width: 1100px; /* 增加图注阅读区域的最大宽度 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .figure-caption strong {
+            color: var(--text-color);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-alt {
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            color: var(--text-color);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 48px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Number Circle Styles (统一用作 Contributions 和 Framework 的序号) */
+        .module-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-color);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .contribution-title, .module-title {
+            display: flex;
+            align-items: flex-start;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        /* Contributions */
+        .contributions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .contribution-card {
+            background: var(--bg-light);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .contribution-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .contribution-desc {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* Framework Section */
+        .framework-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .module-card {
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .module-desc {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Dataset Engine */
+        .engine-workflow {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .workflow-step {
+            flex: 1;
+            min-width: 200px;
+            max-width: 280px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .workflow-step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -10px;
+            width: 20px;
+            height: 2px;
+            background: var(--primary-color);
+            display: none;
+        }
+
+        .workflow-step:not(:last-child)::after {
+            display: block;
+        }
+
+        .workflow-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        .workflow-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .workflow-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* Dataset Section */
+        .dataset-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+        }
+
+        /* 数字字体进一步改小 */
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        /* Taxonomy - 1 Row 5 Columns */
+        .taxonomy-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .taxonomy-card {
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s;
+        }
+
+        .taxonomy-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .taxonomy-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .taxonomy-desc {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .taxonomy-example {
+            background: var(--bg-light);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            border-left: 2px solid var(--accent-color);
+        }
+
+        .taxonomy-example strong {
+            color: var(--text-color);
+        }
+
+        /* Supplementary Material */
+        .supplementary-section {
+            background: var(--bg-color);
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 40px;
+            border: 1px solid var(--border-color);
+        }
+
+        .supplementary-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-dark);
+            color: white;
+            padding: 48px 0;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .taxonomy-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 0 40px;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .authors {
+                font-size: 0.95rem;
+            }
+
+            .btn-group {
+                gap: 12px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .contributions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .taxonomy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            /* 移动端数字字体缩放 */
+            .stat-number {
+                font-size: 1.25rem;
+            }
+
+            .workflow-step::after {
+                display: none;
+            }
+        }
+
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--primary-color);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, background 0.3s;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .scroll-indicator.visible {
+            opacity: 1;
+        }
+
+        .scroll-indicator:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1><span class="gear-highlight">GEAR-Seg</span>: A Grounded Explainable Agent for Reasoning Segmentation and Data Engine</h1>
+                <p class="hero-subtitle">Grounded Explainable Agent for Reasoning Segmentation</p>
+
+                <div class="authors">
+                    <a href="#">Yanan Wang</a>,
+                    <a href="#">Wen Li</a>,
+                    <a href="#">Yibin Ying</a>,
+                    <a href="#">Zhenghao Fei</a><sup>*</sup>
+                </div>
+                <div class="affiliations">
+                    <div class="institution">College of Biosystems Engineering and Food Science, Zhejiang University, Hangzhou 310058, China</div>
+                    <div class="institution">ZJU-Hangzhou Global Scientific and Technological Innovation Center, Zhejiang University, Hangzhou 311215, China</div>
+                </div>
+
+                <div class="btn-group">
+                    <a href="xxjcjdbznwvwrmrxzctkvsgrtqkyxkbx/ECCV_2026_Paper_Template_GEAR_Seg_ArXiv.pdf" class="btn btn-primary" target="_blank">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
+                        Paper
+                    </a>
+                    <a href="https://github.com/AgRoboticsResearch/GEAR-Seg" class="btn btn-secondary" target="_blank">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.48v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.73-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.73 1.03 1.62 1.03 2.73 0 3.82-2.34 4.66-4.55 4.92.36.31.69.92.69 1.85v2.73c0 .25.16.56.66.48A10.013 10.013 0 0016 10c0-5.523-4.477-10-10-10z" clip-rule="evenodd"></path></svg>
+                        Code
+                    </a>
+                    <a href="https://huggingface.co/datasets/00mmw/GEAR-Seg-131k" class="btn btn-secondary" target="_blank">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z"></path></svg>
+                        Dataset
+                    </a>
+                </div>
+
+                <div class="figure-container">
+                    <img src="asset/1-GEAR-Seg-all.png" alt="GEAR-Seg Overview" onerror="this.onerror=null; this.src='xxjcjdbznwvwrmrxzctkvsgrtqkyxkbx/figures/1part2-eps-converted-to.pdf';">
+                    <p class="figure-caption">
+                        <strong>Figure 1:</strong> Overview of GEAR-Seg's multifaceted capabilities. Serving as both a zero-shot inference agent and a scalable data engine, it explicitly translates pixels into text to seamlessly support complex reasoning segmentation, dense referring segmentation, and fine-grained attribute grounding in long-tail domains.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="contributions">
+        <div class="container">
+            <h2 class="section-title">Contributions</h2>
+            <p class="section-subtitle">
+                GEAR-Seg introduces a paradigm shift from implicit end-to-end entanglement to transparent, modular reasoning for visual segmentation tasks.
+            </p>
+
+            <div class="contributions-grid">
+                <div class="contribution-card fade-in">
+                    <h3 class="contribution-title"><span class="module-number">1</span>A Modular Agent with Pixel-to-Text Translation</h3>
+                    <p class="contribution-desc">
+                        We propose GEAR-Seg, an explicitly decoupled agent that shifts the field from implicit end-to-end entanglement to transparent, modular reasoning. By systematically replacing sparse category prompts with dense, mask-level attribute descriptions via a <em>pixel-to-text</em> paradigm, GEAR-Seg achieves competitive zero-shot performance in reasoning segmentation and dense referring segmentation.
+                    </p>
+                </div>
+
+                <div class="contribution-card fade-in">
+                    <h3 class="contribution-title"><span class="module-number">2</span>A Scalable Data Engine and Comprehensive Benchmark</h3>
+                    <p class="contribution-desc">
+                        Leveraging GEAR-Seg as an automated generation pipeline, we construct <strong>GEAR-131K</strong>, a massive, high-fidelity reasoning segmentation dataset (over 38k images, 656k QA-mask pairs). Breaking away from traditional single-target constraints, our dataset introduces a multi-dimensional taxonomy strictly tailored for real-world manipulation-oriented reasoning and functional affordances.
+                    </p>
+                </div>
+
+                <div class="contribution-card fade-in">
+                    <h3 class="contribution-title"><span class="module-number">3</span>Effective Knowledge Distillation Across Model Scales</h3>
+                    <p class="contribution-desc">
+                        We propose a low-cost, data-centric distillation paradigm. By training end-to-end networks exclusively on our automatically generated dataset, we effectively distill the cognitive capabilities of the GEAR-Seg agent into downstream architectures. Student models—from large VLMs (e.g., LISA) to lightweight models (e.g., YOLOv8)—supervised solely by our generated data achieve highly competitive performance, closely matching the rigorous upper-bound metrics of their counterparts trained on costly human-annotated datasets.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt" id="framework">
+        <div class="container">
+            <h2 class="section-title">The GEAR-Seg Framework</h2>
+            <p class="section-subtitle">
+                An explicitly decoupled agent that transforms implicit reasoning into an explicit, trackable logic chain through pixel-to-text translation.
+            </p>
+
+            <div class="figure-container">
+                <img src="asset/2-method.png" alt="GEAR-Seg Framework" onerror="this.onerror=null; this.src='xxjcjdbznwvwrmrxzctkvsgrtqkyxkbx/figures/2-method-eps-converted-to.pdf';">
+                <p class="figure-caption">
+                    <strong>Figure 2:</strong> Overview of the GEAR-Seg framework. The agent explicitly decouples the reasoning segmentation task into class-agnostic perception (SAM 2), dense semantic description (DAM), and logic-driven abstraction (LLM), serving as both a zero-shot inference engine and a scalable data generator.
+                </p>
+            </div>
+
+            <div class="framework-modules">
+                <div class="module-card">
+                    <div class="module-title"><span class="module-number">1</span>Class-Agnostic Segmentation</div>
+                    <p class="module-desc">
+                        We employ <strong>SAM 2</strong> in Everything Mode. A Mask Non-Maximum Suppression yields valid instance masks, ensuring no salient object or subtle background attribute is overlooked.
+                    </p>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-title"><span class="module-number">2</span>Dense Semantic Description</div>
+                    <p class="module-desc">
+                        The core <em>pixel-to-text</em> paradigm shift. Using <strong>DAM</strong>, global context and localized features are extracted and fused to generate context-aware descriptions for each mask. This fine-grained text is the interpretable bedrock for reasoning.
+                    </p>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-title"><span class="module-number">3</span>Logic-Driven Reasoning</div>
+                    <p class="module-desc">
+                        Bypassing entangled VLMs, we deploy a plug-and-play <strong>LLM</strong>. Given the query and descriptions, the LLM explicitly evaluates semantic entailment to output valid mask indices. This enables two modes: <em>Reasoning Segmentation</em> (abstract deduction) and <em>Referring Segmentation</em> (fine-grained grounding).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="dataset-engine">
+        <div class="container">
+            <h2 class="section-title">Dataset Engine Workflow</h2>
+            <p class="section-subtitle">
+                GEAR-Seg inherently functions as a scalable data engine, automatically generating high-quality reasoning segmentation annotations through a closed-loop pipeline.
+            </p>
+
+            <div class="figure-container">
+                <img src="asset/3-Dataset-pipeline2.png" alt="Dataset Engine Workflow" onerror="this.onerror=null; this.src='xxjcjdbznwvwrmrxzctkvsgrtqkyxkbx/figures/2-eps-converted-to.pdf';">
+                <p class="figure-caption">
+                    <strong>Figure 3:</strong> Overview of the GEAR-Seg data generation pipeline and operational modes. The engine fuses multi-granularity visual semantics to autonomously generate diverse annotations.
+                </p>
+            </div>
+
+            <div class="engine-workflow">
+                <div class="workflow-step">
+                    <div class="workflow-icon">🖼️</div>
+                    <div class="workflow-title">Macro-Level Context</div>
+                    <p class="workflow-desc">Lightweight VLM extracts global scene context and relationships</p>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="workflow-icon">🔍</div>
+                    <div class="workflow-title">Micro-Level Details</div>
+                    <p class="workflow-desc">SAM 2 + DAM extract fine-grained semantic regions and attributes</p>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="workflow-icon">🧠</div>
+                    <div class="workflow-title">LLM Reasoning Core</div>
+                    <p class="workflow-desc">Synthesizes modalities to generate queries, logic chains, and masks</p>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="workflow-icon">📊</div>
+                    <div class="workflow-title">High-Quality Output</div>
+                    <p class="workflow-desc">Produces challenging queries with explicit logic chains</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt" id="dataset">
+        <div class="container">
+            <h2 class="section-title">GEAR-131K Benchmark</h2>
+            <p class="section-subtitle">
+                A massive reasoning segmentation dataset comprising over 38k images and 656k diverse QA-mask pairs, introducing a multifaceted taxonomy tailored for complex real-world manipulation-oriented reasoning.
+            </p>
+
+            <div class="dataset-stats">
+                <div class="stat-card">
+                    <div class="stat-number">38K+</div>
+                    <div class="stat-label">High-Resolution Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">656K</div>
+                    <div class="stat-label">QA-Mask Pairs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">131K</div>
+                    <div class="stat-label">Base Pairs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3,014</div>
+                    <div class="stat-label">Distinct Target Entities</div>
+                </div>
+            </div>
+
+            <div class="figure-container">
+                <img src="asset/4-count1.png" alt="Dataset Statistics" onerror="this.onerror=null; this.src='xxjcjdbznwvwrmrxzctkvsgrtqkyxkbx/figures/4data1-eps-converted-to.pdf';">
+                <p class="figure-caption">
+                    <strong>Figure 4:</strong> Detailed statistics of the GEAR-131K benchmark. (a) Image distribution across source datasets (LVIS, VOC, Mapillary, ADE20K). (b) Proportion of the five specialized reasoning categories. (c) Word cloud illustrating the semantic diversity of targeted entities. (d) Comprehensive feature comparison against existing reasoning segmentation datasets.
+                </p>
+            </div>
+
+            <h3 style="font-size: 1.4rem; font-weight: 600; margin-top: 48px; margin-bottom: 24px; text-align: center; color: var(--text-color);">Five Specialized Reasoning Categories</h3>
+
+            <div class="taxonomy-grid">
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Commonsense Reasoning</div>
+                    <p class="taxonomy-desc">Evaluates deductive capabilities based on contextual visual cues.</p>
+                    <div class="taxonomy-example">
+                        Example: Identifying the <strong>birthday cake</strong> from "What suggests a birthday celebration here?"
+                    </div>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Functional Reasoning</div>
+                    <p class="taxonomy-desc">Targets object groups based on utility or affordances, breaking single-category limitations.</p>
+                    <div class="taxonomy-example">
+                        Example: Retrieving <strong>cars, bicycles, and buses</strong> simultaneously given "Identify all means of transportation."
+                    </div>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Manipulation-related Reasoning</div>
+                    <p class="taxonomy-desc">Designed for complex interaction tasks requiring multi-target coordination across distinct semantic categories.</p>
+                    <div class="taxonomy-example">
+                        Example: Returning both the <strong>cake and knife</strong> for "Divide the dessert into several pieces."
+                    </div>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Part-based Reasoning</div>
+                    <p class="taxonomy-desc">Breaks the holistic object-level boundary by localizing fine-grained, sub-instance regions.</p>
+                    <div class="taxonomy-example">
+                        Example: Isolating <strong>"the safe-to-hold part of the knife"</strong>.
+                    </div>
+                </div>
+
+                <div class="taxonomy-card">
+                    <div class="taxonomy-title">Attribute-based Reasoning</div>
+                    <p class="taxonomy-desc">Evaluates fine-grained perception of physical properties (material, shape, state)—crucial for embodied agents.</p>
+                    <div class="taxonomy-example">
+                        Example: Distinguishing a <strong>"plastic toy knife"</strong> from a <strong>"sharp metallic blade"</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="supplementary-section">
+                <h3 class="supplementary-title">Dataset Visualizations & Linguistic Diversity</h3>
+                <div class="figure-container" style="padding: 0;">
+                    <img src="asset/sup1-all-questions.png" alt="Dataset Visualizations" onerror="this.onerror=null; this.src='xxjcjdbznwvwrmrxzctkvsgrtqkyxkbx/figures/sup1-all-questions.pdf';">
+                </div>
+                <p class="figure-caption" style="margin-top: 16px;">
+                    <strong>Figure 5: </strong> Top: Representative examples of the 5-fold linguistic expansion in the GEAR-131K dataset. Bottom: Additional dataset visualizations demonstrating the variety of reasoning scenarios covered by the dataset.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">GEAR-Seg: A Grounded Explainable Agent for Reasoning Segmentation and Data Engine</p>
+            <div class="footer-links">
+                <a href="https://github.com/AgRoboticsResearch/GEAR-Seg" target="_blank">GitHub</a>
+                <a href="https://huggingface.co/datasets/00mmw/GEAR-Seg-131k" target="_blank">HuggingFace Dataset</a>
+                <a href="mailto:zfei@zju.edu.cn">Contact</a>
+            </div>
+            <p class="copyright">
+                &copy; 2026 Zhejiang University. All rights reserved.<br>
+                This work was supported by the Fundamental Research Funds for the Central Universities (Grant No. 226-2025-00074).
+            </p>
+        </div>
+    </footer>
+
+    <div class="scroll-indicator" id="scrollTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+        </svg>
+    </div>
+
+    <script>
+        // Scroll to top button visibility
+        const scrollBtn = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollBtn.classList.add('visible');
+            } else {
+                scrollBtn.classList.remove('visible');
+            }
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
